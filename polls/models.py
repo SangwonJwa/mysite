@@ -1,10 +1,11 @@
 from django.db import models
 from django.utils import timezone
 import datetime
+from django.contrib import admin
 
 class Question(models.Model):
-    question_text = models.CharField(max_length=200)
-    pub_date = models.DateTimeField(auto_now_add=True)
+    question_text = models.CharField(max_length=200, verbose_name='질문')
+    pub_date = models.DateTimeField(auto_now_add=True, verbose_name='생성일')
 
     def __str__(self):
         if self.was_published_recently():
@@ -13,6 +14,7 @@ class Question(models.Model):
             new_badge = ''
         return f'{new_badge} 제목: {self.question_text}, 날짜: {self.pub_date}'
     
+    @admin.display(boolean=True, description='최근생성(하루기준)')
     def was_published_recently(self):
         return self.pub_date >= timezone.now() - datetime.timedelta(days=1)
 
