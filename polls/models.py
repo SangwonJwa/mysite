@@ -14,7 +14,7 @@ class Question(models.Model):
             new_badge = ''
         return f'{new_badge} 제목: {self.question_text}, 날짜: {self.pub_date}'
     
-    @admin.display(boolean=True, description='최근생성(하루기준)')
+    @admin.display(boolean=True, description='최근 생성(하루기준)')
     def was_published_recently(self):
         return self.pub_date >= timezone.now() - datetime.timedelta(days=1)
 
