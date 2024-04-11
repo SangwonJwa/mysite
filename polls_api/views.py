@@ -4,8 +4,10 @@
 # from rest_framework import status, mixins
 # from rest_framework.views import APIView
 from polls.models import Question
-from polls_api.serializers import QuestionSerializer
-from rest_framework import generics
+from polls_api.permissions import IsOwnerOrReadOnly
+from polls_api.serializers import QuestionSerializer, UserSerializer, RegisterSerializer
+from rest_framework import generics, permissions
+from django.contrib.auth.models import User
 
 # Create your views here.
 
@@ -13,11 +15,30 @@ from rest_framework import generics
 class QuestionList(generics.ListCreateAPIView):
     queryset = Question.objects.all()
     serializer_class = QuestionSerializer
+    # 로그인이 된 상태에서만 question 생성 가능
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+    # create할 때 owner필드를 현재 접속한 유저로 설정
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
+
 
 class QuestionDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Question.objects.all()
     serializer_class = QuestionSerializer
-    
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
+
+class UserList(generics.ListAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+
+class UserDetail(generics.RetrieveAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+
+class RegisterUser(generics.CreateAPIView):
+    serializer_class = RegisterSerializer
+
 
 # 데코레이터 기반의 API View
 # @api_view(['GET', 'POST'])

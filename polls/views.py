@@ -3,6 +3,9 @@ from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 from .models import *
 from django.db.models import F
+from django.views import generic
+from django.urls import reverse_lazy
+from django.contrib.auth.forms import UserCreationForm
 
 def index(request):
     latest_question_list = Question.objects.order_by('-pub_date')[:5]
@@ -26,5 +29,12 @@ def vote(request, question_id):
 def result(request, question_id):
     question = get_object_or_404(Question, pk=question_id)
     return render(request, 'polls/result.html', {'question': question})
+
+
+class SignupView(generic.CreateView):
+    form_class = UserCreationForm
+    # reverse_lazy는 url에서 정의한 name을 기반으로 url을 가져오는 함수
+    success_url = reverse_lazy('user-list')
+    template_name = 'registration/signup.html'
 
 # Create your views here.
