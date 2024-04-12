@@ -5,7 +5,7 @@
 # from rest_framework.views import APIView
 from polls.models import Question, Vote
 from polls_api.permissions import IsOwnerOrReadOnly, IsVoter
-from polls_api.serializers import QuestionSerializer, UserSerializer, RegisterSerializer, VoteSeriazlier
+from polls_api.serializers import QuestionSerializer, UserSerializer, RegisterSerializer, VoteSerializer
 from rest_framework import generics, permissions, status
 from django.contrib.auth.models import User
 from rest_framework.response import Response
@@ -13,7 +13,7 @@ from rest_framework.response import Response
 # Create your views here.
 
 class VoteList(generics.ListCreateAPIView): 
-    serializer_class = VoteSeriazlier
+    serializer_class = VoteSerializer
     permissions_classes = [permissions.IsAuthenticated]
 
     # 아무나 모든 vote를 보면 안되기 때문에 내 vote만 보도록 설정
@@ -31,7 +31,7 @@ class VoteList(generics.ListCreateAPIView):
 
 class VoteDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Vote.objects.all()
-    serializer_class = VoteSeriazlier
+    serializer_class = VoteSerializer
     permissions_classes = [permissions.IsAuthenticated, IsVoter]
 
     def perfrom_update(self, serializer):

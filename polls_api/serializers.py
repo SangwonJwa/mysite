@@ -6,7 +6,7 @@ from django.contrib.auth.password_validation import validate_password
 from rest_framework.validators import UniqueTogetherValidator
 
 
-class VoteSeriazlier(serializers.ModelSerializer):
+class VoteSerializer(serializers.ModelSerializer):
     def validate(self, attrs):
         if attrs['choice'].question.id != attrs['question'].id:
             raise serializers.ValidationError({'Question과 Chocie가 조합이 맞지 않습니다.'})
