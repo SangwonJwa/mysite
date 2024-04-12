@@ -1,18 +1,26 @@
 from rest_framework import serializers
 from rest_framework.renderers import JSONRenderer
-from polls.models import Question
+from polls.models import Question, Choice
 from django.contrib.auth.models import User
 from django.contrib.auth.password_validation import validate_password
 
+class ChoiceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Choice
+        fields = ['choice_text', ]
+
+
 class QuestionSerializer(serializers.ModelSerializer):
     owner = serializers.ReadOnlyField(source='owner.username')
+    choices = ChoiceSerializer(many=True, read_only=True)
+
     class Meta:
         model = Question
-        fields = ('id', 'question_text', 'pub_date', 'owner')
+        fields = ('id', 'question_text', 'pub_date', 'owner', 'choices')
 
 class UserSerializer(serializers.ModelSerializer):
     # question들을 가져오는 필드의 정보는 User 테이블에 있는게 아니기 때문에 따로 불러오는 처리가 필요 
-    questions = serializers.PrimaryKeyRelatedField(many=True, queryset=Question.objects.all())
+    questions = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='question-detail')
 
     class Meta:
         model = User

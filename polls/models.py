@@ -13,14 +13,14 @@ class Question(models.Model):
             new_badge = "NEW!!!"
         else:
             new_badge = ''
-        return f'{new_badge} 제목: {self.question_text}, 날짜: {self.pub_date}'
+        return f'{new_badge} 제목: {self.question_text}'
     
     @admin.display(boolean=True, description='최근 생성(하루기준)')
     def was_published_recently(self):
         return self.pub_date >= timezone.now() - datetime.timedelta(days=1)
 
 class Choice(models.Model):
-    question = models.ForeignKey(Question, on_delete=models.CASCADE)
+    question = models.ForeignKey(Question, related_name='choices', on_delete=models.CASCADE)
     choice_text = models.CharField(max_length=200)
     votes = models.IntegerField(default=0)
 
