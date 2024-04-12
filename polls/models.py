@@ -2,6 +2,7 @@ from django.db import models
 from django.utils import timezone
 import datetime
 from django.contrib import admin
+from django.contrib.auth.models import User
 
 class Question(models.Model):
     question_text = models.CharField(max_length=200, verbose_name='질문')
@@ -27,6 +28,17 @@ class Choice(models.Model):
     def __str__(self):
         return self.choice_text
     
+
+class Vote(models.Model):
+    question = models.ForeignKey(Question, on_delete=models.CASCADE)
+    choice = models.ForeignKey(Choice, on_delete=models.CASCADE)
+    voter = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    # 하나의 question에 대해 사용자는 하나의 vote만 가질 수 있게 설정.
+    class Meta:
+        constraints =[
+            models.UniqueConstraint(fields=['question', 'voter'], name='unique_voter_for_questions'),
+        ]
 
 
 
